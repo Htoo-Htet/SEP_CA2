@@ -3,6 +3,7 @@ document.write('\
 <script>\
     document.addEventListener("DOMContentLoaded", function(){\
         var memberEmail = sessionStorage.getItem("memberEmail");\
+        var memberName = sessionStorage.getItem("memberName");\
         if(memberEmail == null || memberEmail == "") {\
             document.getElementById("menuLoggedOut").setAttribute("style", "display:block");\
             document.getElementById("menuLoggedIn").setAttribute("style", "display:none");\
@@ -16,6 +17,7 @@ document.write('\
                 welcomeText = "";\
             }\
             document.getElementById("memberName").innerHTML = "Welcome " + welcomeText + "!";\
+            document.getElementById("profile").innerHTML = "<i class=\'icon icon-user\'></i> " + memberName;\
             document.getElementById("favoriteLink").setAttribute("style", "display:block");\
         }\
         document.getElementById("tableDeskLink").setAttribute("href", "/B/' + countryPrefix + '/furnitureCategory.html?cat=" + encodeURIComponent("Tables & Desks"));\
@@ -73,13 +75,13 @@ document.write('\
                         <a href="/B/' + countryPrefix + '/shoppingCart.html"><i class="icon icon-shopping-cart"></i>Shopping Cart</a>\
                     </li>\
                     <li>\
-                        <a href="/B/' + countryPrefix + '/memberProfile.html"><i class="icon icon-user"></i>Profile</a>\
-                    </li>\
-                    <li>\
                         <a href="/B/' + countryPrefix + '/contactUs.html"><i class="icon icon-shopping-cart"></i>Contact Us</a>\
                     </li>\
                     <li>\
                         <a href="#" onclick="logout()"><i class="icon icon-unlock-alt"></i>Logout</a>\
+                    </li>\
+                    <li>\
+                        <a id="profile" href="/B/' + countryPrefix + '/memberProfile.html"><i class="icon icon-user"></i>Profile</a>\
                     </li>\
                 </ul>\
                 <button class="btn btn-responsive-nav btn-inverse" data-toggle="collapse" data-target=".nav-main-collapse">\

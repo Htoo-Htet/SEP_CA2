@@ -28,6 +28,21 @@
             });
 
             var member = null;
+            function populateForm() {
+                member = JSON.parse(sessionStorage.getItem("member"));
+                if (member) {
+                    document.getElementById('name').value = member.name || '';
+                    document.getElementById('email').value = member.email || '';
+                    document.getElementById('phone').value = member.phone || '';
+                    document.getElementById('country').value = member.countryId || '';
+                    document.getElementById('address').value = member.address || '';
+                    document.getElementById('securityQuestion').value = member.securityQuestion || '1';
+                    document.getElementById('securityAnswer').value = member.securityAnswer || '';
+                    document.getElementById('age').value = member.age || '';
+                    document.getElementById('income').value = member.income || '';
+                    document.getElementById('serviceLevelAgreement').checked = member.sla == 1;
+                }
+            }
             document.addEventListener('DOMContentLoaded', function(){
                 member = JSON.parse(sessionStorage.getItem("member"));
 
@@ -283,6 +298,8 @@
             function pdpaWindow() {
                 var myWindow = window.open("pdpa.html");
             }
+
+            document.addEventListener('DOMContentLoaded', populateForm, false);
         </script>
         <script src="menu2.js"></script>
         <div role="main" class="main">
