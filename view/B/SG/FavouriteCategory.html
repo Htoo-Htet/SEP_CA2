@@ -1,0 +1,106 @@
+<script src="../checkCountry.js"></script>
+<html>
+<head>
+    <script src="../../header.js"></script>
+    <script src="../favorite.js"></script>
+    <script src="https://kit.fontawesome.com/015a0a8305.js" crossorigin="anonymous"></script>
+    <style>
+        #message {
+            display: none;
+            position: fixed;
+            top: 230px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #ffffff;
+            z-index: 1000; /* Ensure message is above other content */
+            opacity: 0.6;
+        }
+        
+        .message-success {
+            background-color: #4CAF50; /* Green color for success message */
+        }
+        
+        .message-error {
+            background-color: #f44336; /* Red color for error message */
+        }
+        
+        .favorite-button {
+            cursor: pointer;
+            color: #ef0000;
+            background-color: transparent;
+            border: 1px solid transparent;
+            padding: 5px 10px;
+            border-radius: 8px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .favorite-button:hover {
+            background-color: red;
+            color: rgb(255, 255, 255);
+        }
+
+    
+    </style>
+</head>
+<body>
+<div class="body">
+    <script src="menu2.js"></script>
+    <div class="body">
+        <div role="main" class="main">
+            <section class="page-top">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h2>Favourites</h2>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <div id="message"></div>
+            <div class="container">
+                
+                <!-- Placeholder for displaying favorite products -->
+                <ul id="favoritesDisplay" class="products-list"></ul>
+                <ul id="retailProductsDisplay" class="products-list"></ul>
+                
+                <div id="noFavoritesMessage" style="display: none; text-align: center; margin-top: 20px; color: #999;">
+                    No favorite products found.
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <script src="../footer.js"></script>
+</div>
+
+<script>
+    var countryPrefix = localStorage.getItem('urlPrefix');
+    var cat = 'Favorites'; // Placeholder for the category title
+
+    // Load and display favorites when the page loads
+    loadFavorites();
+    <!-- loadFavoriteRetails(); -->
+
+    // Check if favorites lists are empty and show message if necessary
+    document.addEventListener('DOMContentLoaded', function() {
+        checkEmptyFavorites();
+    });
+
+    function checkEmptyFavorites() {
+        var favoritesList = document.getElementById('favoritesDisplay');
+        var retailProductsList = document.getElementById('retailProductsDisplay');
+        var noFavoritesMessage = document.getElementById('noFavoritesMessage');
+
+        if (favoritesList.children.length === 0 && retailProductsList.children.length === 0) {
+            noFavoritesMessage.style.display = 'block';
+        } else {
+            noFavoritesMessage.style.display = 'none';
+        }
+    }
+</script>
+</body>
+</html>
