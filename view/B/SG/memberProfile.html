@@ -28,13 +28,15 @@
             });
 
             var member = null;
+
+            // Display logged in user's particulars
             function populateForm() {
                 member = JSON.parse(sessionStorage.getItem("member"));
                 if (member) {
                     document.getElementById('name').value = member.name || '';
                     document.getElementById('email').value = member.email || '';
                     document.getElementById('phone').value = member.phone || '';
-                    document.getElementById('country').value = member.countryId || '';
+                    document.getElementById('country').value = member.city || '';
                     document.getElementById('address').value = member.address || '';
                     document.getElementById('securityQuestion').value = member.securityQuestion || '1';
                     document.getElementById('securityAnswer').value = member.securityAnswer || '';
@@ -211,8 +213,34 @@
                 var password = document.getElementById("password").value;
                 var repassword = document.getElementById("repassword").value;
                 var ok = true;
-                console.log(oldPassword)
+                
+                //Reset the border color of all password input text area
+                document.getElementById("oldPassword").style.borderColor = "";
+                document.getElementById("password").style.borderColor = "";
+                document.getElementById("repassword").style.borderColor = "";
+                
                 if (document.getElementById("profileForm").checkValidity()) {
+                    // Check if old password is provided when changing passwords
+                    if (oldPassword === "" && (password !== "" || repassword !== "")) {
+                        document.getElementById("oldPassword").style.borderColor = "#E34234";
+                        alert("Please enter your old password.");
+                        ok = false;
+                    }
+
+                    // Check if new password is provided when changing passwords
+                    else if (password === "" && (oldPassword !== "" || repassword !== "")) {
+                        document.getElementById("password").style.borderColor = "#E34234";
+                        alert("Please enter your new password.");
+                        ok = false;
+                    }
+
+                    // Check if new password confirmation is provided when changing passwords
+                    else if (repassword === "" && (oldPassword !== "" || password !== "")) {
+                        document.getElementById("repassword").style.borderColor = "#E34234";
+                        alert("Please confirm your new password.");
+                        ok = false;
+                    }
+                    // Continue to submit particular updates for no passwords entered
                     if (oldPassword != "" && password != "" && repassword != "") {
                         var memberData = {
                             id: member.id,
@@ -231,11 +259,17 @@
                             return response.json();
                         }).then(function (data) {
                             if(data.success) {
-                                if (password != repassword) {
+                                if (oldPassword === password) {
+                                    //Check if oldpassword and password is the same
+                                    document.getElementById("oldPassword").style.borderColor = "#E34234";
+                                    document.getElementById("password").style.borderColor = "#E34234";
+                                    alert("New password is the same as old password. Please key again.");
+                                    ok = false;
+                                } else if (password != repassword) {
                                     //Check if password and repassword is the same
                                     document.getElementById("password").style.borderColor = "#E34234";
                                     document.getElementById("repassword").style.borderColor = "#E34234";
-                                    alert("Passwords do not match. Please key again.");
+                                    alert("New Passwords do not match. Please key again.");
                                     ok = false;
                                 } else if (password == repassword) {
                                     //Check if password length is at least 8
