@@ -31,20 +31,22 @@
 
             // Display logged in user's particulars
             function populateForm() {
-                member = JSON.parse(sessionStorage.getItem("member"));
-                if (member) {
-                    document.getElementById('name').value = member.name || '';
-                    document.getElementById('email').value = member.email || '';
-                    document.getElementById('phone').value = member.phone || '';
-                    document.getElementById('country').value = member.city || '';
-                    document.getElementById('address').value = member.address || '';
-                    document.getElementById('securityQuestion').value = member.securityQuestion || '1';
-                    document.getElementById('securityAnswer').value = member.securityAnswer || '';
-                    document.getElementById('age').value = member.age || '';
-                    document.getElementById('income').value = member.income || '';
-                    document.getElementById('serviceLevelAgreement').checked = member.sla == 1;
+            member = JSON.parse(sessionStorage.getItem("member"));
+            if (member) {
+                document.getElementById('name').value = member.name || '';
+                document.getElementById('email').value = member.email || '';
+                document.getElementById('phone').value = member.phone || '';
+                document.getElementById('country').value = member.city || '';
+                document.getElementById('address').value = member.address || '';
+                document.getElementById('securityQuestion').value = member.securityQuestion || '1';
+                document.getElementById('securityAnswer').value = member.securityAnswer || '';
+                document.getElementById('age').value = member.age || '';
+                document.getElementById('income').value = member.income || '';
+                document.getElementById('serviceLevelAgreement').checked = member.sla == 1;
+
                 }
             }
+
             document.addEventListener('DOMContentLoaded', function(){
                 member = JSON.parse(sessionStorage.getItem("member"));
 
@@ -62,6 +64,7 @@
                 })).then(function (response) {
                     return response.json();
                 }).then(function (boughtItem) {
+                    console.log(boughtItem)
                     if(boughtItem == null || boughtItem == '') { //if member do not have any bought items
                         document.getElementById("salesHistoryTab").innerHTML = '<h5 class="center">You do not have any sales history.</h5>';
                     }
@@ -73,9 +76,11 @@
                         //get all order IDs
                         for (i = 0; i < boughtItem.length; i++) {
                             orderIdList[i] = boughtItem[i].id;
+                            //console.log(orderIdList)
                         }
                         //unduplicate order IDs
                         orderIdList = [...new Set(orderIdList)];
+                        console.log(orderIdList)
                         var temp;
                         var size = orderIdList.length;
                         //sort order ID in ascending order
@@ -88,14 +93,15 @@
                                 }
                             }
                         }
-                                         
-                            htmlTxt += '<h5>Order #' + (1) + '</h5>';
+                        for (j = 0; j < orderIdList.length; j++)   {      
+                            htmlTxt += '<h5>Order #' + (j+1) + '</h5>';
                             var counter = 0;
                             //get bought items by order ID
-                            for (j = 0; j < boughtItem.length; j++) {
-                            
-                                if(boughtItem[j].id == orderIdList[0]) {
-                                    var item = boughtItem[j];
+                            for (i = 0; i < boughtItem.length; i++) {
+                                
+                                if(boughtItem[i].id == orderIdList[j]) {
+                                    var item = boughtItem[i];
+                                    
                                     //display top level info
                                     if(counter == 0) {
                                         let options = {
@@ -137,7 +143,7 @@
                                                             <tbody>';
                             for (y = 0; y < boughtItem.length; y++) {
                             
-                                if (boughtItem[y].id == orderIdList[0]) {
+                                if (boughtItem[y].id == orderIdList[j]) {
                                     var product = boughtItem[y];
                                     htmlTxt += '\
                                         <tr class="cart_table_item">\
@@ -180,6 +186,7 @@
                                     </div>\
                                 </div>';
                             finalPrice = 0;
+                        }
 
                         htmlTxt += '<h4 style="font-weight: bold; padding-left: 20px">Total Amount Spent: $'+ overallPrice + '</h4>';
                         document.getElementById("salesHistoryTab").innerHTML = htmlTxt;
@@ -213,13 +220,16 @@
                 var password = document.getElementById("password").value;
                 var repassword = document.getElementById("repassword").value;
                 var ok = true;
-                
+
                 //Reset the border color of all password input text area
                 document.getElementById("oldPassword").style.borderColor = "";
                 document.getElementById("password").style.borderColor = "";
                 document.getElementById("repassword").style.borderColor = "";
-                
+
+                console.log(oldPassword)
                 if (document.getElementById("profileForm").checkValidity()) {
+
+                    
                     // Check if old password is provided when changing passwords
                     if (oldPassword === "" && (password !== "" || repassword !== "")) {
                         document.getElementById("oldPassword").style.borderColor = "#E34234";
@@ -240,7 +250,8 @@
                         alert("Please confirm your new password.");
                         ok = false;
                     }
-                    // Continue to submit particular updates for no passwords entered
+
+                    
                     if (oldPassword != "" && password != "" && repassword != "") {
                         var memberData = {
                             id: member.id,
@@ -265,13 +276,13 @@
                                     document.getElementById("password").style.borderColor = "#E34234";
                                     alert("New password is the same as old password. Please key again.");
                                     ok = false;
-                                } else if (password != repassword) {
+                                } else if (password !== repassword) {
                                     //Check if password and repassword is the same
                                     document.getElementById("password").style.borderColor = "#E34234";
                                     document.getElementById("repassword").style.borderColor = "#E34234";
-                                    alert("New Passwords do not match. Please key again.");
+                                    alert("New passwords do not match. Please key again.");
                                     ok = false;
-                                } else if (password == repassword) {
+                                }else if (password == repassword) {
                                     //Check if password length is at least 8
                                     if (password.length != 0 && password.length < 8) {
                                         alert("Passwords too short. At least 8 characters.");
@@ -334,7 +345,7 @@
             }
 
             document.addEventListener('DOMContentLoaded', populateForm, false);
-        </script>
+    </script>
         <script src="menu2.js"></script>
         <div role="main" class="main">
             <section class="page-top">
