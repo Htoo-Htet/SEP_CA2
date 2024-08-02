@@ -80,52 +80,59 @@ var memberDB = {
         });
     },
     getMember: function (email) {
-        return new Promise( ( resolve, reject ) => {
+        return new Promise((resolve, reject) => {
             var conn = db.getConnection();
             conn.connect(function (err) {
                 if (err) {
                     console.log(err);
                     conn.end();
                     return reject(err);
-                }
-                else {
+                } else {
                     var sql = 'SELECT * FROM memberentity m WHERE m.EMAIL=?';
                     conn.query(sql, [email], function (err, result) {
                         if (err) {
                             conn.end();
                             return reject(err);
-                        } else {
-                            var member = new Member();
-                            member.id = result[0].ID;
-                            member.dob = result[0].DOB;
-                            member.accountActivationStatus = result[0].ACCOUNTACTIVATIONSTATUS;
-                            member.accountLockStatus = result[0].ACCOUNTLOCKSTATUS;
-                            member.activationCode = result[0].ACTIVATIONCODE;
-                            member.address = result[0].ADDRESS;
-                            member.age = result[0].AGE;
-                            member.city = result[0].CITY;
-                            member.cumulativeSpending = result[0].CUMULATIVESPENDING;
-                            member.email = result[0].EMAIL;
-                            member.income = result[0].INCOME;
-                            member.isDeleted = result[0].ISDELETED;
-                            member.joinDate = result[0].JOINDATE;
-                            member.loyaltyCardId = result[0].LOYALTYCARDID;
-                            member.loyaltyPoints = result[0].LOYALTYPOINTS;
-                            member.name = result[0].NAME;
-                            member.occupation = result[0].OCCUPATION;
-                            member.passwordHash = result[0].PASSWORDHASH;
-                            member.passwordReset = result[0].PASSWORDRESET;
-                            member.phone = result[0].PHONE;
-                            member.securityAnswer = result[0].SECURITYANSWER;
-                            member.securityQuestion = result[0].SECURITYQUESTION;
-                            member.sla = result[0].SERVICELEVELAGREEMENT;
-                            member.zipcode = result[0].ZIPCODE;
-                            member.loyaltyTierId = result[0].LOYALTYTIER_ID;
-                            member.countryId = result[0].COUNTRY_ID;
-                            member.wishlistId = result[0].WISHLIST_ID;
-                            member.stripeCustomerId = result[0].STRIPECUSTOMERID;
+                        } else if (result.length === 0) {
                             conn.end();
-                            return resolve(member);
+                            return resolve(null); // No member found
+                        } else {
+                            try {
+                                var member = new Member();
+                                member.id = result[0].ID;
+                                member.dob = result[0].DOB;
+                                member.accountActivationStatus = result[0].ACCOUNTACTIVATIONSTATUS;
+                                member.accountLockStatus = result[0].ACCOUNTLOCKSTATUS;
+                                member.activationCode = result[0].ACTIVATIONCODE;
+                                member.address = result[0].ADDRESS;
+                                member.age = result[0].AGE;
+                                member.city = result[0].CITY;
+                                member.cumulativeSpending = result[0].CUMULATIVESPENDING;
+                                member.email = result[0].EMAIL;
+                                member.income = result[0].INCOME;
+                                member.isDeleted = result[0].ISDELETED;
+                                member.joinDate = result[0].JOINDATE;
+                                member.loyaltyCardId = result[0].LOYALTYCARDID;
+                                member.loyaltyPoints = result[0].LOYALTYPOINTS;
+                                member.name = result[0].NAME;
+                                member.occupation = result[0].OCCUPATION;
+                                member.passwordHash = result[0].PASSWORDHASH;
+                                member.passwordReset = result[0].PASSWORDRESET;
+                                member.phone = result[0].PHONE;
+                                member.securityAnswer = result[0].SECURITYANSWER;
+                                member.securityQuestion = result[0].SECURITYQUESTION;
+                                member.sla = result[0].SERVICELEVELAGREEMENT;
+                                member.zipcode = result[0].ZIPCODE;
+                                member.loyaltyTierId = result[0].LOYALTYTIER_ID;
+                                member.countryId = result[0].COUNTRY_ID;
+                                member.wishlistId = result[0].WISHLIST_ID;
+                                member.stripeCustomerId = result[0].STRIPECUSTOMERID;
+                                conn.end();
+                                return resolve(member);
+                            } catch (err) {
+                                conn.end();
+                                return reject(err);
+                            }
                         }
                     });
                 }

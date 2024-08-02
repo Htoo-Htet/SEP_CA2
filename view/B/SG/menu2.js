@@ -52,7 +52,7 @@ document.write('\
                         <a href="/B/' + countryPrefix + '/memberLogin.html"><i class="icon icon-unlock-alt"></i>Login/Register</a>\
                     </li>\
                     <li>\
-                        <a href="/B/' + countryPrefix + '/contactUs.html"><i class="icon icon-shopping-cart"></i>Contact Us</a>\
+                        <a href="/B/' + countryPrefix + '/contactUs.html"><i class="fa-solid fa-envelope"></i>Contact Us</a>\
                     </li>\
                 </ul>\
                 <button class="btn btn-responsive-nav btn-inverse" data-toggle="collapse" data-target=".nav-main-collapse">\
@@ -75,7 +75,7 @@ document.write('\
                         <a href="/B/' + countryPrefix + '/shoppingCart.html"><i class="icon icon-shopping-cart"></i>Shopping Cart</a>\
                     </li>\
                     <li>\
-                        <a href="/B/' + countryPrefix + '/contactUs.html"><i class="icon icon-shopping-cart"></i>Contact Us</a>\
+                        <a href="/B/' + countryPrefix + '/contactUs.html"><i class="fa-solid fa-envelope"></i></i>Contact Us</a>\
                     </li>\
                     <li>\
                         <a href="#" onclick="logout()"><i class="icon icon-unlock-alt"></i>Logout</a>\

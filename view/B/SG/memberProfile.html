@@ -31,20 +31,20 @@
 
             // Display logged in user's particulars
             function populateForm() {
-            member = JSON.parse(sessionStorage.getItem("member"));
-            if (member) {
-                document.getElementById('name').value = member.name || '';
-                document.getElementById('email').value = member.email || '';
-                document.getElementById('phone').value = member.phone || '';
-                document.getElementById('country').value = member.city || '';
-                document.getElementById('address').value = member.address || '';
-                document.getElementById('securityQuestion').value = member.securityQuestion || '1';
-                document.getElementById('securityAnswer').value = member.securityAnswer || '';
-                document.getElementById('age').value = member.age || '';
-                document.getElementById('income').value = member.income || '';
-                document.getElementById('serviceLevelAgreement').checked = member.sla == 1;
+                member = JSON.parse(sessionStorage.getItem("member"));
+                if (member) {
+                    document.getElementById('name').value = member.name || '';
+                    document.getElementById('email').value = member.email || '';
+                    document.getElementById('phone').value = member.phone || '';
+                    document.getElementById('country').value = member.city || '';
+                    document.getElementById('address').value = member.address || '';
+                    document.getElementById('securityQuestion').value = member.securityQuestion || '1';
+                    document.getElementById('securityAnswer').value = member.securityAnswer || '';
+                    document.getElementById('age').value = member.age || '';
+                    document.getElementById('income').value = member.income || '';
+                    document.getElementById('serviceLevelAgreement').checked = member.sla == 1;
 
-                }
+                    }
             }
 
             document.addEventListener('DOMContentLoaded', function(){
@@ -93,7 +93,7 @@
                                 }
                             }
                         }
-                        for (j = 0; j < orderIdList.length; j++)   {      
+                        for (j = orderIdList.length -1; j >= 0; j--)   {      
                             htmlTxt += '<h5>Order #' + (j+1) + '</h5>';
                             var counter = 0;
                             //get bought items by order ID
@@ -226,7 +226,6 @@
                 document.getElementById("password").style.borderColor = "";
                 document.getElementById("repassword").style.borderColor = "";
 
-                console.log(oldPassword)
                 if (document.getElementById("profileForm").checkValidity()) {
 
                     
@@ -251,8 +250,20 @@
                         ok = false;
                     }
 
+                    else if(password.includes(' ')){
+                        document.getElementById("password").style.borderColor = "#E34234";
+                        alert("Password cannot contains space.");
+                        ok = false;
+                    }
+
+                    else if(repassword.includes(' ')){
+                        document.getElementById("repassword").style.borderColor = "#E34234";
+                        alert("Password cannot contains space.");
+                        ok = false;
+                    }
+
                     
-                    if (oldPassword != "" && password != "" && repassword != "") {
+                    else if (oldPassword != "" && password != "" && repassword != "") {
                         var memberData = {
                             id: member.id,
                             password: oldPassword
@@ -271,7 +282,7 @@
                         }).then(function (data) {
                             if(data.success) {
                                 if (oldPassword === password) {
-                                    //Check if oldpassword and password is the same
+                                    //Check if old password and password is the same
                                     document.getElementById("oldPassword").style.borderColor = "#E34234";
                                     document.getElementById("password").style.borderColor = "#E34234";
                                     alert("New password is the same as old password. Please key again.");
@@ -299,45 +310,65 @@
                         }); 
                     }
 
-                    if(ok) {
-                        var data = {
-                            email: document.getElementById("email").value,
-                            name: document.getElementById("name").value,
-                            phone: document.getElementById("phone").value,
-                            country: document.getElementById("country").value,
-                            address: document.getElementById("address").value,
-                            securityQuestion: document.getElementById("securityQuestion").value,
-                            securityAnswer: document.getElementById("securityAnswer").value,
-                            age: document.getElementById("age").value,
-                            income: document.getElementById("income").value,
-                            sla: document.getElementById("serviceLevelAgreement").checked ? 1:0,
-                            password: document.getElementById("password").value
-                        };
-                        
-                        fetch(new Request('/api/updateMember',
-                        {
-                            method: 'PUT',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                Authorization: 'Bearer ' + authToken
-                            },
-                            body: JSON.stringify(data)
-                        })).then(function (response) {
-                            return response.json();
-                        }).then(function (data) {
-                            //update member's info in the session storage
-                            sessionStorage.setItem("member", JSON.stringify(data));
-                            sessionStorage.setItem("memberEmail", data.email);
-                            sessionStorage.setItem("memberName", data.name);
+                    if (ok) {
+                        try {
+                            var name = document.getElementById("name").value.trim();
+                            var address = document.getElementById("address").value.trim();
+                            var securityAnswer = document.getElementById("securityAnswer").value.trim();
+                            var age = parseInt(document.getElementById("age").value, 10);
+                            var phone =  document.getElementById("phone").value;
+                            // Validate age
+                            if (isNaN(age) || age < 1 || age > 100) {
+                                throw new Error("Age must be a number between 1 and 100.");
+                            }
+
+                            if (phone.length > 10 || phone.length < 8) {
+                                throw new Error("Phone number must have at least 8 numbers and at most 10 numbers!");
+                            }
+
+                            
+                    
+                            var data = {
+                                email: document.getElementById("email").value,
+                                name: name,
+                                phone: document.getElementById("phone").value,
+                                country: document.getElementById("country").value,
+                                address: address,
+                                securityQuestion: document.getElementById("securityQuestion").value,
+                                securityAnswer: securityAnswer,
+                                age: age,
+                                income: document.getElementById("income").value,
+                                sla: document.getElementById("serviceLevelAgreement").checked ? 1 : 0,
+                                password: document.getElementById("password").value
+                            };
+                    
+                            fetch(new Request('/api/updateMember', {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    Authorization: 'Bearer ' + authToken
+                                },
+                                body: JSON.stringify(data)
+                            })).then(function(response) {
+                                return response.json();
+                            }).then(function(data) {
+                                // Update member's info in the session storage
+                                sessionStorage.setItem("member", JSON.stringify(data));
+                                sessionStorage.setItem("memberEmail", data.email);
+                                sessionStorage.setItem("memberName", data.name);
+                                var url = window.location.origin + window.location.pathname;
+                                window.location.href = url + '?goodMsg=Successfully Updated!';
+                            }).catch(function(error) {
+                                var url = window.location.origin + window.location.pathname;
+                                window.location.href = url + '?errMsg=Unable to Update.';
+                            });
+                        } catch (error) {
                             var url = window.location.origin + window.location.pathname;
-                            window.location.href = url + '?goodMsg=Successfully Updated!';
-                        }).catch(function (error) {
-                            console.log(error);
-                            var url = window.location.origin + window.location.pathname;
-                            window.location.href = url + '?errMsg=Unable to Update.';
-                        });
+                            window.location.href = `${url}?errMsg=${error.message}`;
+                        }
                     }
                 }
+                    
             }
 
             function pdpaWindow() {

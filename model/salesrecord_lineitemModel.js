@@ -6,7 +6,6 @@ var salesRecord_lineItemDB = {
             var conn = db.getConnection();
             conn.connect(function (err) {
                 if (err) {
-                    console.log(err);
                     conn.end();
                     return reject(err);
                 }

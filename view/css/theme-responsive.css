@@ -93,7 +93,6 @@ Version: 		3.1.1
         position: static;
         clear: both;
         float: none;
-        display: none !important;
     }
 
     #header .nav-main li.resp-active > ul.dropdown-menu {

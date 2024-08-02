@@ -21,7 +21,8 @@
                 }).then(function (product) {
                     //set retail product details
                     document.getElementById("productImg").setAttribute('src', product.imageURL);
-
+                    document.getElementById("price").textContent = 'Price : $' + product.price.toFixed(2);
+                    document.getElementById("description").textContent = product.description;
                     document.getElementById("productCategory").innerHTML = product.category;
                     document.getElementById("productCategory").setAttribute('href', '/B/' + countryPrefix
                         + '/retailProductsCategory.html?cat=' + encodeURIComponent(product.category));
@@ -104,7 +105,9 @@
                                 <div class="summary entry-summary">
                                     <h2 class="shorter"><strong id="productName"></strong></h2>
                                     <p class="price"><h4 class="amount" id="productPrice"></h4></p>
+                                    <p class="price"><h4 class="amount" id="price">Price : </h4></p>
                                     <strong>Description</strong>
+                                    <p class="taller" id="description"></p>
                                     <p class="taller" id="productDesc"></p>
                                     <div class="product_meta">
                                         <span class="posted_in">Category: <a rel="tag" id="productCategory"></a></span>

@@ -96,7 +96,12 @@ app.post('/api/processPaymentNewCard', [middleware.checkToken, jsonParser], func
             insertDbRecords(data, res);
         },
         function (err) {
-            res.send({ success: false, errMsg: err.message });
+            if (err.type === 'StripeCardError') {
+                res.status(402).send({ success: false, errMsg: 'Your card was declined. Please use a valid test card.' });
+            } else {
+                console.error('Error processing payment:', err);
+                res.status(500).send({ success: false, errMsg: 'An error occurred while processing your payment.' });
+            }
         }
     );
 });

@@ -72,6 +72,10 @@
         background-color: rgb(203, 8, 8);
         color: rgb(248, 248, 248)
     }
+
+    #height, #length, #width {
+        display: block;
+    }
 </style>
 
 
@@ -103,9 +107,12 @@
                             <div class="summary entry-summary">
                                 <h2 class="shorter"><strong id="furnitureName"></strong><span id="buttonF"></span></h2>
                                 <span id="addToCartBtn"></span> 
-                                <p class="price"><h4 class="amount" id="price">Price : </h4></p>
+                                <p class="price"><h4 class="amount" id="price"></h4></p>
                                 <strong>Description</strong>
                                 <p class="taller" id="description"></p>
+                                <span id="height"></span>
+                                <span id="length"></span>
+                                <span id="width"></span>
                                 <p id="furnitureInfo"></p>
                                 <div class="product_meta">
                                     <span class="posted_in">Category: <a id="categoryLink" rel="tag"></a></span>
@@ -153,9 +160,13 @@ view
                 return response.json();
             })
             .then(furniture => {
+                console.log(furniture)
                 document.getElementById("imgFurniture").setAttribute('src', furniture.imageURL);
                 document.getElementById("furnitureName").textContent = furniture.name;
-                document.getElementById("price").textContent = 'Price : $' + furniture.price.toFixed(2);
+                document.getElementById("price").textContent = '$' + furniture.price.toFixed(2);
+                document.getElementById("height").textContent = 'Height: ' + furniture.height;
+                document.getElementById("length").textContent = 'Length: ' + furniture.length;
+                document.getElementById("width").textContent = 'Width: ' + furniture.width;
                 document.getElementById("description").textContent = furniture.description;
                 document.getElementById("categoryLink").textContent = furniture.category;
                 document.getElementById("categoryLink").setAttribute('href', '/B/' + countryPrefix + '/furnitureCategory.html?cat=' + encodeURIComponent(furniture.category));

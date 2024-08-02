@@ -38,158 +38,166 @@
     <body>
         <script>
             var favorites = JSON.parse(sessionStorage.getItem('favorites')) || [];
-            //get category from query parameter
-            var currentUrl = new URL(window.location.href);
-            var cat = currentUrl.searchParams.get("cat");
-            document.addEventListener('DOMContentLoaded', function(){
-                var countryId = localStorage.getItem('countryId');
-                fetch(new Request('/api/getFurnitureByCat?cat=' + encodeURIComponent(cat) + '&countryId=' + countryId,
-                {
-                    method: 'GET'
-                })).then(function (response) {
-                    return response.json();
-                }).then(function (data) {
-                    var htmlTxt = '';
-                        var furniture = data[0];
-                        //generate html for furnitures
-                        htmlTxt += '\
-                                <li class="col-md-3 col-sm-6 col-xs-12 product" style="padding-bottom: 1%;padding-top: 2%;">\
-                                    <span class="product-thumb-info">\
-                                        <span class="product-thumb-info-image">\
-                                            <span class="product-thumb-info-act">\
-                                                <span class="product-thumb-info-act-left">\
-                                                    <a href="furnitureProductDetails.html?sku=' + furniture.sku + '" style="color: white"><em>View Details</em></a>\
-                                                </span>\
-                                            </span>\
-                                            <img alt="" class="img-responsive" src="' + furniture.imageURL + '">\
-                                        </span>\
-                                        <span class="product-thumb-info-content">\
-                                            <div style="display: flex; justify-content: space-between; align-items: center;">\
-                                                <h4 style="margin: 0;">' + furniture.name + '</h4>\
-                                                <div id="buttonF"></div>\
-                                            </div>\
-                                            <span class="product-thumb-info-act-left">\
-                                                <em>Height: ' + furniture.height + '</em>\
-                                            </span><br/>\
-                                            <span class="product-thumb-info-act-left">\
-                                                <em>Length: ' + furniture.length + '</em>\
-                                            </span><br/>\
-                                            <span class="product-thumb-info-act-left">\
-                                                <em>Width: ' + furniture.width + '</em>\
-                                            </span><br/>\
-                                            <span class="product-thumb-info-act-left">\
-                                                <em>Price: $' + furniture.price + '.00</em>\
-                                            </span><br/>\
-                                            <form action="furnitureProductDetails.html">\
-                                                <input type="hidden" name="sku" value="' + furniture.sku + '"/>\
-                                                <input type="submit" class="btn btn-primary btn-block" value="More Details"/>\
-                                            </form>';
-                                //check if user is logged in
-                                var memberEmail = sessionStorage.getItem('memberEmail');
-                                //display 'Add To Cart' button only if user is logged in
-                                if(memberEmail != null && memberEmail != '') {
-                                    htmlTxt += '<button class="btn btn-primary btn-block" onclick="addToCart(\'' + furniture.sku +
-                                        '\',\'' + furniture.id + '\',' + furniture.price + ',\'' + furniture.name + '\',\'' + furniture.imageURL +
-                                        '\', \'' + cat +
-                                        '\')">Add To Cart</button>';
+var currentUrl = new URL(window.location.href);
+var cat = currentUrl.searchParams.get("cat");
 
-                                
-                            }
+document.addEventListener('DOMContentLoaded', function() {
+    var countryId = localStorage.getItem('countryId');
+    fetch(new Request('/api/getFurnitureByCat?cat=' + encodeURIComponent(cat) + '&countryId=' + countryId, {
+        method: 'GET'
+    })).then(function(response) {
+        return response.json();
+    }).then(function(data) {
+        console.log(data);
+        var htmlTxt = '';
+        for (var i = 0; i < data.length; i++) {
+            var furniture = data[i];
+            // Generate HTML for furniture items
+            htmlTxt += '\
+            <li class="col-md-3 col-sm-6 col-xs-12 product" style="padding-bottom: 1%; padding-top: 2%;">\
+                <span class="product-thumb-info">\
+                    <span class="product-thumb-info-image">\
+                        <span class="product-thumb-info-act">\
+                            <span class="product-thumb-info-act-left">\
+                                <a href="furnitureProductDetails.html?sku=' + furniture.sku + '" style="color: white"><em>View Details</em></a>\
+                            </span>\
+                        </span>\
+                        <img alt="" class="img-responsive" src="' + furniture.imageURL + '">\
+                    </span>\
+                    <span class="product-thumb-info-content">\
+                        <div style="display: flex; justify-content: space-between; align-items: center;">\
+                            <h4 style="margin: 0;">' + furniture.name + '</h4>\
+                            <div id="buttonF' + i + '"></div>\
+                        </div>\
+                        <span class="product-thumb-info-act-left">\
+                            <em>Height: ' + furniture.height + '</em>\
+                        </span><br/>\
+                        <span class="product-thumb-info-act-left">\
+                            <em>Length: ' + furniture.length + '</em>\
+                        </span><br/>\
+                        <span class="product-thumb-info-act-left">\
+                            <em>Width: ' + furniture.width + '</em>\
+                        </span><br/>\
+                        <span class="product-thumb-info-act-left">\
+                            <em>Price: $' + furniture.price + '.00</em>\
+                        </span><br/>\
+                        <form action="furnitureProductDetails.html">\
+                            <input type="hidden" name="sku" value="' + furniture.sku + '"/>\
+                            <input type="submit" class="btn btn-primary btn-block" value="More Details"/>\
+                        </form>';
 
-                                htmlTxt += '</span></span></li>';
-
-                    document.getElementById("furnituresDisplay").innerHTML = htmlTxt;
-                    if(memberEmail != null && memberEmail != '') {
-                        // Check if furniture is in favorites
-                        var isInFavorites = favorites.some(function(item) {
-                            return item.sku === furniture.sku;
-                        });
-                        updateButton(isInFavorites, furniture);
-                    }   
-                    document.getElementById("categoryTitle").innerHTML = cat;
-                    
-                }).catch(function(error) {
-                    console.log(error);
-                });
-            }, false);
-
-           // Function to update the button based on whether the product is in favorites
-            function updateButton(isInFavorites, furniture) {
-                var buttonF = document.getElementById('buttonF');
-                if (isInFavorites) {
-                    buttonF.innerHTML = `<button class="favorite-button fa-solid fa-heart" onclick='removeFromFavorites(${JSON.stringify(furniture)})'></button>`;
-                } else {
-                    buttonF.innerHTML = `<button class="f-button fa-regular fa-heart" onclick='addToFavoritesWrapper(${JSON.stringify(furniture)})'></button>`;
-                }
+            // Check if user is logged in
+            var memberEmail = sessionStorage.getItem('memberEmail');
+            if (memberEmail != null && memberEmail != '') {
+                // Display 'Add To Cart' button if user is logged in
+                htmlTxt += '<button class="btn btn-primary btn-block" onclick="addToCart(\'' + furniture.sku +
+                    '\',\'' + furniture.id + '\',' + furniture.price + ',\'' + furniture.name + '\',\'' + furniture.imageURL +
+                    '\', \'' + cat +
+                    '\')">Add To Cart</button>';
             }
+            htmlTxt += '</span></span></li>';
+        }
+        document.getElementById("furnituresDisplay").innerHTML = htmlTxt;
+        document.getElementById("categoryTitle").innerHTML = cat;
 
-            // Wrapper function to call addToFavorites with the necessary parameters
-            function addToFavoritesWrapper(furniture) {
-                addToFavorites(
-                    furniture.sku, 
-                    furniture.name, 
-                    furniture.price, 
-                    furniture.imageURL, 
-                    furniture.height, 
-                    furniture.length, 
-                    furniture.width, 
-                    sessionStorage.getItem('memberEmail'), 
-                    furniture,
-                    currentUrl.searchParams.get("cat")
-                );
-            }
-
-            // Function to add a product to the favorites list
-            function addToFavorites(sku, name, price, imageURL, height, length, width, memberEmail, furniture, cat) {
-                // Check if memberEmail is null / undefined
-                if (!memberEmail || memberEmail === "null" || memberEmail === "undefined") {
-                    alert('You must be logged in to add favorites.');
-                    return; // Exit function if memberEmail is undefined
-                }   
-
-                // Check if the product is already in favorites for the current memberEmail
-                var existingFavorite = favorites.find(function(item) {
-                    return item.sku === sku && item.memberEmail === memberEmail;
-                });
-
-                // Add the new product to the favorites array
-                favorites.push({
-                    sku: sku,
-                    name: name,
-                    price: price,
-                    imageURL: imageURL,
-                    height: height,
-                    length: length,
-                    width: width,
-                    memberEmail: memberEmail,
-                    cat: cat
-                });
-
-                // Save the updated favorites array back to sessionStorage
-                sessionStorage.setItem('favorites', JSON.stringify(favorites));
-
-                // Update the button to "Remove" after adding to favorites
-                updateButton(true, furniture);
-            }
-
-            // Function to remove a product from the favorites list
-            function removeFromFavorites(furniture) {
-                // Find index of the product in favorites array
-                var index = favorites.findIndex(function(item) {
+        // Check if user is logged in and update favorite buttons
+        if (memberEmail != null && memberEmail != '') {
+            for (var i = 0; i < data.length; i++) {
+                var furniture = data[i];
+                var isInFavorites = favorites.some(function(item) {
                     return item.sku === furniture.sku;
                 });
-
-                if (index !== -1) {
-                    // Remove the product from favorites array
-                    favorites.splice(index, 1);
-
-                    // Save the updated favorites array back to sessionStorage
-                    sessionStorage.setItem('favorites', JSON.stringify(favorites));
-                }
-
-                // Update the button to "Add Fav" after removing from favorites
-                updateButton(false, furniture);
+                updateButton(isInFavorites, furniture, i);
             }
+        }
+    }).catch(function(error) {
+        console.log(error);
+    });
+}, false);
+
+// Function to update the button based on whether the product is in favorites
+function updateButton(isInFavorites, furniture, index) {
+    var buttonF = document.getElementById('buttonF' + index);
+    buttonF.innerHTML = '';
+    buttonF.innerHTML += isInFavorites ?
+        `<div><button class="favorite-button fa-solid fa-heart" onclick='removeFromFavorites(${JSON.stringify(furniture)}, ${index})'></button></div>` :
+        `<div><button class="f-button fa-regular fa-heart" onclick='addToFavoritesWrapper(${JSON.stringify(furniture)}, ${index})'></button></div>`;
+}
+
+// Wrapper function to call addToFavorites with the necessary parameters
+function addToFavoritesWrapper(furniture, index) {
+    addToFavorites(
+        furniture.sku, 
+        furniture.name, 
+        furniture.price, 
+        furniture.imageURL, 
+        furniture.height, 
+        furniture.length, 
+        furniture.width, 
+        sessionStorage.getItem('memberEmail'), 
+        furniture,
+        currentUrl.searchParams.get("cat"),
+        index
+    );
+}
+
+// Function to add a product to the favorites list
+function addToFavorites(sku, name, price, imageURL, height, length, width, memberEmail, furniture, cat, index) {
+    // Check if memberEmail is null / undefined
+    if (!memberEmail || memberEmail === "null" || memberEmail === "undefined") {
+        alert('You must be logged in to add favorites.');
+        return; // Exit function if memberEmail is undefined
+    }
+
+    // Check if the product is already in favorites for the current memberEmail
+    var existingFavorite = favorites.find(function(item) {
+        return item.sku === sku && item.memberEmail === memberEmail;
+    });
+
+    if (existingFavorite) {
+        alert('This item is already in your favorites.');
+        return; // Exit function if the product is already in favorites
+    }
+
+    // Add the new product to the favorites array
+    favorites.push({
+        sku: sku,
+        name: name,
+        price: price,
+        imageURL: imageURL,
+        height: height,
+        length: length,
+        width: width,
+        memberEmail: memberEmail,
+        cat: cat
+    });
+
+    // Save the updated favorites array back to sessionStorage
+    sessionStorage.setItem('favorites', JSON.stringify(favorites));
+
+    // Update the button to "Remove" after adding to favorites
+    updateButton(true, furniture, index);
+}
+
+// Function to remove a product from the favorites list
+function removeFromFavorites(furniture, index) {
+    // Find index of the product in favorites array
+    var itemIndex = favorites.findIndex(function(item) {
+        return item.sku === furniture.sku;
+    });
+
+    if (itemIndex !== -1) {
+        // Remove the product from favorites array
+        favorites.splice(itemIndex, 1);
+
+        // Save the updated favorites array back to sessionStorage
+        sessionStorage.setItem('favorites', JSON.stringify(favorites));
+    }
+
+    // Update the button to "Add Fav" after removing from favorites
+    updateButton(false, furniture, index);
+}
+
 
 
 
